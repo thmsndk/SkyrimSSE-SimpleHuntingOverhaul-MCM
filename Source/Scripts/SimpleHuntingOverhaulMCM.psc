@@ -11,12 +11,19 @@ GlobalVariable Property SHO_XL Auto ; 0x07000844
 GlobalVariable Property SHO_XXL Auto ; 0x07000845
 ; GlobalVariable Property SHO_GuardDialogueTracker Auto
 
+int sliderSHO_S_OID
+int sliderSHO_M_OID
+int sliderSHO_L_OID
+int sliderSHO_XL_OID
+int sliderSHO_XXL_OID
+
 ; MCM Helper perhaps? https://github.com/Exit-9B/MCM-Helper/wiki
 
 Event OnConfigInit()
     ModName = "Simple Hunting Overhaul"
-    Pages = new string[1]
+    Pages = new string[2]
     Pages[0] = "Settings"
+    Pages[1] = "Rewards"
 
     ; Load references to SHO globals
     SHO_S = Game.GetFormFromFile(0x07000841, "Simple Hunting Overhaul.esp") AS GlobalVariable
@@ -31,22 +38,107 @@ Event OnPageReset(string pageName)
     ; It could also be varied depending on weight of the carcass
     ; We could perhaps also modify the weight of the item.
 
+    If (pageName == Pages[1])
+    SetCursorFillMode(TOP_TO_BOTTOM)
+
     ; Script properties on the fragments are responsible for setting the reward property depending on the dialogue
     ; Skeever, Dog
-    AddTextOption("Small Carcass Reward", SHO_S.GetValue());
+    sliderSHO_S_OID = AddSliderOption("Small Carcass Reward", SHO_S.GetValue());
     
     ; Wolf, Ice Wolf, Fox, Snow Fox, Chicken, Hare, Slaughterfish, Mudcrab
-    AddTextOption("Medium Carcass Reward", SHO_M.GetValue());
+    sliderSHO_M_OID = AddSliderOption("Medium Carcass Reward", SHO_M.GetValue());
     
     ; Goat, Large Mudcrab, Giant Mudcrab
-    AddTextOption("Large Carcass Reward", SHO_L.GetValue());
+    sliderSHO_L_OID = AddSliderOption("Large Carcass Reward", SHO_L.GetValue());
     
     ; Deer, Elk Male, Elk Female
-    AddTextOption("XL Carcass Reward", SHO_XL.GetValue());
+    sliderSHO_XL_OID = AddSliderOption("XL Carcass Reward", SHO_XL.GetValue());
     
     ; Vale Deer
-    AddTextOption("XXL Carcass Rewardi", SHO_XXL.GetValue());
+    sliderSHO_XXL_OID = AddSliderOption("XXL Carcass Rewardi", SHO_XXL.GetValue());
+    EndIf
+    
 EndEvent
+
+; @implements SKI_ConfigBase
+event OnOptionSliderOpen(int a_option)
+	{Called when the user selects a slider option}
+
+    ; TODO: Limit it to the sliders we want
+	if (a_option == sliderSHO_S_OID)
+        float value = SHO_S.GetValue()
+		SetSliderDialogStartValue(value)
+		; SetSliderDialogDefaultValue(50)
+		SetSliderDialogRange(0, value*10)
+		SetSliderDialogInterval(5)
+	endIf
+
+    if (a_option == sliderSHO_M_OID)
+		float value = SHO_M.GetValue()
+        SetSliderDialogStartValue(value)
+		; SetSliderDialogDefaultValue(50)
+		SetSliderDialogRange(0, value*10)
+		SetSliderDialogInterval(5)
+	endIf
+
+    if (a_option == sliderSHO_L_OID)
+		float value = SHO_L.GetValue()
+        SetSliderDialogStartValue(value)
+		; SetSliderDialogDefaultValue(50)
+		SetSliderDialogRange(0, value*10)
+		SetSliderDialogInterval(5)
+	endIf
+
+    if (a_option == sliderSHO_XL_OID)
+		float value = SHO_XL.GetValue()
+        SetSliderDialogStartValue(value)
+		; SetSliderDialogDefaultValue(50)
+		SetSliderDialogRange(0, value*10)
+		SetSliderDialogInterval(5)
+	endIf
+
+    if (a_option == sliderSHO_XXL_OID)
+		float value = SHO_XXL.GetValue()
+        SetSliderDialogStartValue(value)
+		; SetSliderDialogDefaultValue(50)
+		SetSliderDialogRange(0, value*10)
+		SetSliderDialogInterval(5)
+	endIf
+
+
+
+endEvent
+
+; @implements SKI_ConfigBase
+event OnOptionSliderAccept(int a_option, float a_value)
+	{Called when the user accepts a new slider value}
+		
+	if (a_option == sliderSHO_S_OID)
+		SHO_S.SetValue(a_value)
+		SetSliderOptionValue(a_option, a_value, "{0}")
+	endIf
+
+    if (a_option == sliderSHO_M_OID)
+		SHO_M.SetValue(a_value)
+		SetSliderOptionValue(a_option, a_value, "{0}")
+	endIf
+
+    if (a_option == sliderSHO_L_OID)
+		SHO_L.SetValue(a_value)
+		SetSliderOptionValue(a_option, a_value, "{0}")
+	endIf
+
+    if (a_option == sliderSHO_XL_OID)
+		SHO_XL.SetValue(a_value)
+		SetSliderOptionValue(a_option, a_value, "{0}")
+	endIf
+
+    if (a_option == sliderSHO_XXL_OID)
+		SHO_XXL.SetValue(a_value)
+		SetSliderOptionValue(a_option, a_value, "{0}")
+	endIf
+
+endEvent
 
 ; https://ck.uesp.net/wiki/Global
 ; GlobalVariable Property GameHour  auto
