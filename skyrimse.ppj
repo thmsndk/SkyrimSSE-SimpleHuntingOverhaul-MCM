@@ -6,12 +6,12 @@
     Output="Scripts" 
     Optimize="false" 
     Release="false" 
-    Zip="false"
+    Zip="true"
     Package="false"
     Final="false">
     <Variables>
         <!-- Set the name of your mod: -->
-        <Variable Name="ModName" Value="CHANGE THE MOD NAME HERE" />
+        <Variable Name="ModName" Value="Simple Hunting Overhaul - MCM" />
         <!-- The folder where you store all of your mods -->
         <Variable Name="ModsFolder" Value="D:\Skyrim Modding\Tools\MO2\mods" />
         <Variable Name="SkyrimFolder" Value="D:\SteamLibrary\steamapps\common\Skyrim Special Edition" />
@@ -41,7 +41,8 @@
         <ZipFile Name="@ModName" RootDir="." Compression="deflate">
             <Include>@ModName.esp</Include>
             <Include NoRecurse="true">*.bsa</Include>
-            <Match In="Scripts\Source">*.psc</Match>
+            <Match In="Source\Scripts">*.psc</Match>
+            <Match In="Scripts">*.pex</Match>
         </ZipFile>
     </ZipFiles>
     <!-- This will remove any *.bsa files in this directory *after* the build, if there are any. Set UseInBuild="false" to disable. -->
