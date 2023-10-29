@@ -135,6 +135,35 @@ Event OnPageReset(string pageName)
 EndEvent
 
 ; @implements SKI_ConfigBase
+event OnOptionSelect(int a_option)
+	{Called when the user selects a non-dialog option}
+	
+	if (a_option == toggleRemovePelts_OID)
+        int value = SHO_RemovePelts.GetValueInt()
+
+        if(value == 1)
+            SHO_RemovePelts.SetValueInt(0)
+            SetToggleOptionValue(a_option, 0)
+        else
+            SHO_RemovePelts.SetValueInt(1)
+            SetToggleOptionValue(a_option, 1)
+        endIf
+
+	elseIf (a_option == toggleEnablePermits_OID)
+		int value = SHO_EnablePermits.GetValueInt()
+        
+        if(value == 1)
+            SHO_EnablePermits.SetValueInt(0)
+            SetToggleOptionValue(a_option, 0)
+        else
+            SHO_EnablePermits.SetValueInt(1)
+            SetToggleOptionValue(a_option, 1)
+        endIf
+
+	endIf
+endEvent
+
+; @implements SKI_ConfigBase
 event OnOptionSliderOpen(int a_option)
     {Called when the user selects a slider option}
     OnRewardSliderOpen(a_option)
