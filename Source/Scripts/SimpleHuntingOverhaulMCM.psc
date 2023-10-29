@@ -1,6 +1,6 @@
 Scriptname SimpleHuntingOverhaulMCM extends SKI_ConfigBase
 
-GlobalVariable Property _HuntingXP Auto ; FE004822
+GlobalVariable Property SHO_HuntingXP Auto ; FE004822
 
 ; GlobalVariable Property GameHour Auto
 GlobalVariable Property SHO_FadeTimePass   Auto ; FE004821
@@ -16,6 +16,7 @@ GlobalVariable Property SHO_XXL         Auto ; 0x07000845
 
 int menuFadeTimePass_OID
 string[] menuFadeTimePassOptions
+string[] menuFadeTimePassOptionsDescription
 
 int toggleRemovePelts_OID
 int toggleEnablePermits_OID
@@ -47,6 +48,15 @@ Event OnConfigInit()
     menuFadeTimePassOptions[1] = "Time pass, Fadeout"
     menuFadeTimePassOptions[2] = "Only fadeout"
     menuFadeTimePassOptions[3] = "Only time pass"
+    
+    menuFadeTimePassOptionsDescription = new string[4]
+    menuFadeTimePassOptionsDescription[0] = "No time passes and there's no fadeout of the screen"
+    menuFadeTimePassOptionsDescription[1] = "Both time and fadeout of the screen happen. This is the default."
+    menuFadeTimePassOptionsDescription[2] = "only fadeout of the screen happens"
+    menuFadeTimePassOptionsDescription[3] = "only time passes"
+    
+    SHO_HuntingXP  = Game.GetFormFromFile(0x07004822, "Simple Hunting Overhaul.esp") AS GlobalVariable
+    
 EndEvent
 
 Event OnPageReset(string pageName)
@@ -57,20 +67,50 @@ Event OnPageReset(string pageName)
     SetCursorFillMode(TOP_TO_BOTTOM)
     
     ; Left Column
-    ; ; _FadeTimePass == 0 means that no time passes and there's no fadeout of the screen
-    ; ; _FadeTimePass == 1 means both time and fadeout of the screen happen. This is the default.
-    ; ; _FadeTimePass == 2 means only fadeout of the screen happens
-    ; ; _FadeTimePass == 3 means only time passes
-    ; - You can disable the skinned animal look by typing "Set _RemovePelts to 0"
-    ; - You can disable the need for a permit by typing "Set _EnablePermits to 0"
-    ; - You can disable the time passing + fadeout effect of looting by typing "Set _FadeTimePass to 0"
-    ; - You can disable the time passing of looting by typing "Set _FadeTimePass to 2"
-    ; - You can disable the fadeout effect of looting by typing "Set _FadeTimePass to 3"
+    AddHeaderOption("Settings")
     
-    ; TODO: DropDown lookup for text representation
-    menuFadeTimePass_OID    = AddMenuOption("FadeTimePass", menuFadeTimePassOptions[SHO_FadeTimePass.GetValueInt()])
+    menuFadeTimePass_OID    = AddMenuOption("When looting kill", menuFadeTimePassOptions[SHO_FadeTimePass.GetValueInt()])
     toggleRemovePelts_OID   = AddToggleOption("Enable skinned animal look", SHO_RemovePelts.GetValue())
     toggleEnablePermits_OID = AddToggleOption("Enable hunting permits", SHO_EnablePermits.GetValue())
+    
+    ; SimpleHuntingOverhaul_Alias.psc is responsible for passing time,
+    ; the time it takes depends on your current hunting xp
+    ; each item added increases your hunting xp
+    AddHeaderOption("Experience")
+    int currentXP = SHO_HuntingXP.GetValueInt();
+    AddTextOption("Experience", currentXP+" / 100")
+    
+    If  currentXP < 10
+        ; howlong = 2.0
+    AddTextOption("    Two hours pass while you retrieve the pelt...", "")
+    elseif currentXP < 20
+        ; howlong = 1.5
+    AddTextOption("    An hour and half pass while you retrieve the pelt...", "")
+    elseif currentXP < 30
+        ; howlong = 1.3
+    AddTextOption("    Around one hour passes...", "")
+    elseif currentXP < 40
+        ; howlong = 1.0
+    AddTextOption("    One hour passes...", "")
+    elseif currentXP < 50
+        ; howlong = 0.7
+    AddTextOption("    Less than one hour passes...", "")
+    elseif currentXP < 60
+        ; howlong = 0.5
+    AddTextOption("    Half an hour passes...", "")
+    elseif currentXP < 70
+        ; howlong = 0.4
+    AddTextOption("    Less than half an hour passes...", "")
+    elseif currentXP < 80
+        ; howlong = 0.3
+    AddTextOption("    A quarter of an hour passes...", "")
+    elseif currentXP < 90
+        ; howlong = 0.2
+    AddTextOption("    Ten minutes pass...", "")
+    else
+        ; howlong = 0.1
+    AddTextOption("    A few minutes pass...", "")
+    endif
     
     ; Right Column
     SetCursorPosition(1)
@@ -91,6 +131,7 @@ Event OnPageReset(string pageName)
     
     ; Vale Deer
     sliderSHO_XXL_OID = AddSliderOption("XXL Carcass Reward", SHO_XXL.GetValue(), sliderGoldFormat);
+    
 EndEvent
 
 ; @implements SKI_ConfigBase
@@ -181,6 +222,11 @@ event OnOptionHighlight(int a_option)
         SetInfoText("XXL Carcass: Vale Deer")
     endIf
     
+    If (a_option == menuFadeTimePass_OID)
+        string description = menuFadeTimePassOptionsDescription[SHO_FadeTimePass.GetValueInt()]
+        SetInfoText(description)
+    EndIf
+    
 endEvent
 
 ; @implements SKI_ConfigBase
@@ -206,18 +252,3 @@ event OnOptionMenuAccept(int a_option, int a_index)
     
 endEvent
 
-; https://ck.uesp.net/wiki/Global
-; GlobalVariable Property GameHour  auto
-; _FadeTimePass [GLOB:FE001821]
-; _HuntingXP [GLOB:FE001822]
-; _EnablePermits [GLOB:FE00183D]
-; GlobalVariable Property _HuntingXP Auto
-; GlobalVariable Property GameHour Auto
-; GlobalVariable Property _FadeTimePass Auto
-; GlobalVariable Property _RemovePelts Auto
-; SHO_S [GLOB:FE001841]
-; SHO_M [GLOB:FE001842]
-; SHO_L [GLOB:FE001843]
-; SHO_XL [GLOB:FE001844]
-; SHO_XXL [GLOB:FE001845]
-; SHO_GuardDialogueTracker [GLOB:FE00187E]
